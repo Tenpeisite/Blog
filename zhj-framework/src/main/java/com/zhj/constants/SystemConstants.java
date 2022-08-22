@@ -26,5 +26,15 @@ public class SystemConstants
      * 评论为根评论
      */
     public static final int COMMENT_STATUS_NORMAL = -1;
+    /**
+     * 文章评论类型
+     */
+    public static final String ARTICLE_TYPE="0";
+    /**
+     * 友链评论类型
+     */
+    public static final String YOULIAN_TYPE="1";
+
+
 
 }

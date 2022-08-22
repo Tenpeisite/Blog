@@ -13,5 +13,7 @@ import com.zhj.domin.entity.Comment;
  */
 public interface CommentService extends IService<Comment> {
 
-    Result commentList(Long articleId, Integer pageNum, Integer pageSize);
+    Result commentList(String commentType, Long articleId, Integer pageNum, Integer pageSize);
+
+    Result addComment(Comment comment);
 }

@@ -1,11 +1,11 @@
 package com.zhj.controller;
 
+import com.zhj.constants.SystemConstants;
 import com.zhj.domin.Result;
+import com.zhj.domin.entity.Comment;
 import com.zhj.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author 朱焕杰
@@ -21,6 +21,16 @@ public class CommentController {
 
     @GetMapping("/commentList")
     public Result commentList(Long articleId,Integer pageNum,Integer pageSize){
-        return commentService.commentList(articleId,pageNum,pageSize);
+        return commentService.commentList(SystemConstants.ARTICLE_TYPE,articleId,pageNum,pageSize);
+    }
+
+    @PostMapping
+    public Result addComment(@RequestBody Comment comment){
+        return commentService.addComment(comment);
+    }
+
+    @GetMapping("/linkCommentList")
+    public Result linkCommentList(Integer pageNum,Integer pageSize){
+        return commentService.commentList(SystemConstants.YOULIAN_TYPE,null,pageNum,pageSize);
     }
 }

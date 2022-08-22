@@ -91,4 +91,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         return Result.okResult(articleDetailVo);
     }
+
+    @Override
+    public Result updateViewCount(Long id) {
+        Article article = getById(id);
+        article.setViewCount(article.getViewCount()+1);
+        updateById(article);
+        return Result.okResult();
+    }
 }

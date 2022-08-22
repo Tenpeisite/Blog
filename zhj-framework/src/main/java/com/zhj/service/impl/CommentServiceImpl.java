@@ -1,6 +1,7 @@
 package com.zhj.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhj.constants.SystemConstants;
@@ -9,11 +10,12 @@ import com.zhj.domin.entity.Comment;
 import com.zhj.domin.entity.User;
 import com.zhj.domin.vo.CommentVo;
 import com.zhj.domin.vo.PageVo;
+import com.zhj.enums.AppHttpCodeEnum;
+import com.zhj.exception.SystemException;
 import com.zhj.mapper.CommentMapper;
 import com.zhj.service.CommentService;
 import com.zhj.service.UserService;
 import com.zhj.utils.BeanCopyUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +35,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private UserService userService;
 
     @Override
-    public Result commentList(Long articleId, Integer pageNum, Integer pageSize) {
+    public Result commentList(String commentType, Long articleId, Integer pageNum, Integer pageSize) {
         //查询对应文章的根评论
         //1.构造查询条件
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Comment::getArticleId, articleId)
-                .eq(Comment::getRootId, SystemConstants.COMMENT_STATUS_NORMAL);
+        queryWrapper.eq(SystemConstants.ARTICLE_TYPE.equals(commentType),Comment::getArticleId, articleId)
+                .eq(Comment::getRootId, SystemConstants.COMMENT_STATUS_NORMAL)
+                .eq(Comment::getType,commentType);
         //分页查询
         Page<Comment> pageInfo = new Page<>(pageNum, pageSize);
         page(pageInfo, queryWrapper);
@@ -52,6 +55,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             return item;
         }).collect(Collectors.toList());
         return Result.okResult(new PageVo(commentVoList, pageInfo.getTotal()));
+    }
+
+    @Override
+    public Result addComment(Comment comment) {
+        //评论内容不能为空
+        if(StringUtils.isBlank(comment.getContent())){
+            throw new SystemException(AppHttpCodeEnum.CONTENT_NOT_NULL);
+        }
+        save(comment);
+        return Result.okResult();
     }
 
     private List<CommentVo> toCommentVoList(List<Comment> list) {
