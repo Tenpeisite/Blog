@@ -22,5 +22,9 @@ public class SystemConstants
      * redis用户id前缀
      */
     public static final String REDIS_LOGINUSER_PREFIX="bloglogin:";
+    /**
+     * 评论为根评论
+     */
+    public static final int COMMENT_STATUS_NORMAL = -1;
 
 }

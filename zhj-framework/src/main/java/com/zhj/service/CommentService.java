@@ -1,6 +1,7 @@
 package com.zhj.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zhj.domin.Result;
 import com.zhj.domin.entity.Comment;
 
 
@@ -12,4 +13,5 @@ import com.zhj.domin.entity.Comment;
  */
 public interface CommentService extends IService<Comment> {
 
+    Result commentList(Long articleId, Integer pageNum, Integer pageSize);
 }
