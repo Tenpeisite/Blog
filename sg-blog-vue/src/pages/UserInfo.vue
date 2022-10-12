@@ -31,7 +31,8 @@
                         </li>
                         <li>
                             <span class="leftTitle">电子邮件</span>
-                            <span>{{userInfoObj.email}}</span>
+                          <el-input v-model="userInfoObj.email" placeholder="电子邮件"></el-input> <i  class="fa fa-wa fa-asterisk"></i>
+<!--                          <span>{{userInfoObj.email}}</span>-->
                         </li>
                         <li>
                             <span class="leftTitle">性别</span>
@@ -78,8 +79,6 @@
                             <span class="leftTitle">性别</span>
                             <span>{{userInfoObj.sex==0?'男':'女'}}</span>
                         </li>
-
-                     
                     </ul>
 
                 </section>

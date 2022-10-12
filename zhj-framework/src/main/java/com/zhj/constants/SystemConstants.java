@@ -34,7 +34,10 @@ public class SystemConstants
      * 友链评论类型
      */
     public static final String YOULIAN_TYPE="1";
-
+    /**
+     * 文章浏览量前缀
+     */
+    public static final String REDIS_VIEWCOUNT_PREFIX="article:viewCount";
 
 
 }

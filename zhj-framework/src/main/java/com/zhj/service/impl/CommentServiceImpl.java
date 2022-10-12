@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhj.constants.SystemConstants;
+import com.zhj.domin.ResponseResult;
 import com.zhj.domin.Result;
 import com.zhj.domin.entity.Comment;
 import com.zhj.domin.entity.User;
@@ -37,30 +38,36 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public Result commentList(String commentType, Long articleId, Integer pageNum, Integer pageSize) {
         //查询对应文章的根评论
-        //1.构造查询条件
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SystemConstants.ARTICLE_TYPE.equals(commentType),Comment::getArticleId, articleId)
-                .eq(Comment::getRootId, SystemConstants.COMMENT_STATUS_NORMAL)
-                .eq(Comment::getType,commentType);
+        //对articleId进行判断
+        queryWrapper.eq(SystemConstants.ARTICLE_TYPE.equals(commentType), Comment::getArticleId, articleId);
+        //根评论 rootId为-1
+        queryWrapper.eq(Comment::getRootId, -1);
+
+        //评论类型
+        queryWrapper.eq(Comment::getType, commentType);
+
         //分页查询
-        Page<Comment> pageInfo = new Page<>(pageNum, pageSize);
-        page(pageInfo, queryWrapper);
-        //拷贝对象
-        List<CommentVo> commentVoList = toCommentVoList(pageInfo.getRecords());
-        //查询所有根评论对应的子评论集合，并赋值
-        commentVoList = commentVoList.stream().map(item -> {
-            //获得子评论列表vo
-            List<CommentVo> children = getChildren(item.getId());
-            item.setChildren(children);
-            return item;
-        }).collect(Collectors.toList());
-        return Result.okResult(new PageVo(commentVoList, pageInfo.getTotal()));
+        Page<Comment> page = new Page(pageNum, pageSize);
+        page(page, queryWrapper);
+
+        List<CommentVo> commentVoList = toCommentVoList(page.getRecords());
+
+        //查询所有根评论对应的子评论集合，并且赋值给对应的属性
+        for (CommentVo commentVo : commentVoList) {
+            //查询对应的子评论
+            List<CommentVo> children = getChildren(commentVo.getId());
+            //赋值
+            commentVo.setChildren(children);
+        }
+
+        return Result.okResult(new PageVo(commentVoList, page.getTotal()));
     }
 
     @Override
     public Result addComment(Comment comment) {
         //评论内容不能为空
-        if(StringUtils.isBlank(comment.getContent())){
+        if (StringUtils.isBlank(comment.getContent())) {
             throw new SystemException(AppHttpCodeEnum.CONTENT_NOT_NULL);
         }
         save(comment);
@@ -68,21 +75,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     private List<CommentVo> toCommentVoList(List<Comment> list) {
-        List<CommentVo> commentVoList = BeanCopyUtils.copyBeanList(list, CommentVo.class);
+        List<CommentVo> commentVos = BeanCopyUtils.copyBeanList(list, CommentVo.class);
         //遍历vo集合
-        commentVoList = commentVoList.stream().map(item -> {
-            //通过createdBy查询用户的昵称并赋值
-            User user = userService.getById(item.getCreateBy());
-            item.setUsername(user.getNickName());
+        for (CommentVo commentVo : commentVos) {
+            //通过creatyBy查询用户的昵称并赋值
+            String nickName = userService.getById(commentVo.getCreateBy()).getNickName();
             //通过toCommentUserId查询用户的昵称并赋值
-            //如果toCommentUserId不为-1才查询
-            if (item.getToCommentUserId().intValue() != SystemConstants.COMMENT_STATUS_NORMAL) {
-                String nickName = userService.getById(item.getToCommentUserId()).getNickName();
-                item.setToCommentUserName(nickName);
+            commentVo.setUsername(nickName);
+            //如果toCommentUserId不为-1才进行查询
+            if (commentVo.getToCommentUserId() != -1) {
+                String toCommentUserName = userService.getById(commentVo.getToCommentUserId()).getNickName();
+                commentVo.setToCommentUserName(toCommentUserName);
             }
-            return item;
-        }).collect(Collectors.toList());
-        return commentVoList;
+        }
+        return commentVos;
     }
 
     /**

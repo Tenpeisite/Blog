@@ -16,6 +16,7 @@ import com.zhj.mapper.ArticleMapper;
 import com.zhj.service.ArticleService;
 import com.zhj.service.CategoryService;
 import com.zhj.utils.BeanCopyUtils;
+import com.zhj.utils.RedisCache;
 import org.assertj.core.util.Objects;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private RedisCache redisCache;
+
+
     @Override
     public Result hotArticleList() {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
@@ -50,6 +55,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //    return hotArticleVo;
         //}).collect(Collectors.toList());
         List<HotArticleVo> list = BeanCopyUtils.copyBeanList(records, HotArticleVo.class);
+        list = list.stream().map(item -> {
+            Integer viewCount = (Integer) redisCache.getCacheMap(SystemConstants.REDIS_VIEWCOUNT_PREFIX).get(item.getId().toString());
+            item.setViewCount(Long.valueOf(viewCount));
+            return item;
+        }).collect(Collectors.toList());
         return Result.okResult(list);
     }
 
@@ -71,6 +81,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             BeanUtils.copyProperties(item, articleVo, "categoryId");
             Category category = categoryService.getById(item.getCategoryId());
             articleVo.setCategoryName(category.getName());
+            Integer viewCount = redisCache.getCacheMapValue(SystemConstants.REDIS_VIEWCOUNT_PREFIX, item.getId().toString());
+            articleVo.setViewCount(viewCount.longValue());
             return articleVo;
         }).collect(Collectors.toList());
         PageVo pageVo = new PageVo(list, articleVoPage.getTotal());
@@ -81,12 +93,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public Result getArticleDetail(Long id) {
         //根据id查询文章
         Article article = getById(id);
+        //从redis中获取viewCount
+        Integer viewCount = redisCache.getCacheMapValue(SystemConstants.REDIS_VIEWCOUNT_PREFIX, id.toString());
+        article.setViewCount(viewCount.longValue());
         //封装vo
         ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
         //根据分类id查询分类名
         Long categoryId = articleDetailVo.getCategoryId();
         Category category = categoryService.getById(categoryId);
-        if(category!=null){
+        if (category != null) {
             articleDetailVo.setCategoryName(category.getName());
         }
         return Result.okResult(articleDetailVo);
@@ -94,9 +109,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public Result updateViewCount(Long id) {
-        Article article = getById(id);
-        article.setViewCount(article.getViewCount()+1);
-        updateById(article);
+        //Article article = getById(id);
+        //article.setViewCount(article.getViewCount()+1);
+        //updateById(article);
+        //return Result.okResult();
+
+        //更新redis中对应id的浏览量
+        redisCache.incrementCacheMapValue(SystemConstants.REDIS_VIEWCOUNT_PREFIX, id.toString(), 1);
         return Result.okResult();
     }
 }

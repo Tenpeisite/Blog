@@ -1,6 +1,8 @@
 package com.zhj.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zhj.domin.ResponseResult;
+import com.zhj.domin.Result;
 import com.zhj.domin.entity.User;
 
 
@@ -12,4 +14,9 @@ import com.zhj.domin.entity.User;
  */
 public interface UserService extends IService<User> {
 
+    Result userInfo();
+
+    ResponseResult updateUserInfo(User user);
+
+    ResponseResult register(User user);
 }

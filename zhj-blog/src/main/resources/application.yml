@@ -23,3 +23,9 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
       id-type: auto
+
+oss:
+  accessKey: ka6H9o3ZTM112U-EWiiPChwk8rq3J31SNcIZ0pkb
+  secretKey: EZPiVi0ePmDKxy1Rw4VxhXD6PcO4nMigmzxL1Rko
+  bucket: blog-zhj
+  website: http://blog.tempeisite.xyz/

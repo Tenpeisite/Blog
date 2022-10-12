@@ -3,6 +3,7 @@ package com.zhj;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author 朱焕杰
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan("com.zhj.mapper")
+@EnableScheduling
 public class ZhjBlogApplication {
     public static void main(String[] args) {
         SpringApplication.run(ZhjBlogApplication.class,args);
