@@ -31,4 +31,9 @@ public class ArticleDetailVo {
     //访问量
     private Long viewCount;
     private Date createTime;
+    //是否置顶（0否，1是）
+    private String isTop;
+    //状态（0已发布，1草稿）
+    private String status;
+
 }

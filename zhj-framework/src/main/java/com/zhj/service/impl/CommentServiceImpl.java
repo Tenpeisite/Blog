@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhj.constants.SystemConstants;
 import com.zhj.domin.ResponseResult;
 import com.zhj.domin.Result;
+import com.zhj.domin.dto.AddComentDto;
 import com.zhj.domin.entity.Comment;
 import com.zhj.domin.entity.User;
 import com.zhj.domin.vo.CommentVo;
@@ -17,6 +18,7 @@ import com.zhj.mapper.CommentMapper;
 import com.zhj.service.CommentService;
 import com.zhj.service.UserService;
 import com.zhj.utils.BeanCopyUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

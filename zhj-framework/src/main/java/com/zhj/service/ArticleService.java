@@ -1,6 +1,10 @@
 package com.zhj.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zhj.domin.ResponseResult;
+import com.zhj.domin.dto.AddArticleDto;
+import com.zhj.domin.dto.EditArticleDto;
+import com.zhj.domin.dto.QueryArticleDto;
 import com.zhj.domin.entity.Article;
 import com.zhj.domin.Result;
 
@@ -17,4 +21,18 @@ public interface ArticleService extends IService<Article> {
     Result getArticleDetail(Long id);
 
     Result updateViewCount(Long id);
+
+    ResponseResult addBlog(AddArticleDto addArticleDto);
+
+    ResponseResult getArticles(QueryArticleDto queryArticleDto);
+
+    ResponseResult getArticleInfo(Long id);
+
+    ResponseResult editStatus(Long id);
+
+    ResponseResult editBlog(EditArticleDto editArticleDto);
+
+    ResponseResult deleteArticle(Long id);
+
+    ResponseResult editTop(Long id);
 }

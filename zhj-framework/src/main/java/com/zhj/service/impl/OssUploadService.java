@@ -40,12 +40,12 @@ public class OssUploadService implements UploadService {
         // 判断文件类型或者文件大小
         //获取原始文件名
         String originalFilename = img.getOriginalFilename();
-        if(!originalFilename.endsWith(".jpg")&&!originalFilename.endsWith(".png")&&!originalFilename.endsWith(".jpeg")){
+        if (!originalFilename.endsWith(".jpg") && !originalFilename.endsWith(".png") && !originalFilename.endsWith(".jpeg")) {
             throw new SystemException(AppHttpCodeEnum.FILE_TYPE_ERROR);
         }
         //如果判断通过上传文件到oss
         String filePath = PathUtils.generateFilePath(originalFilename);
-        String url = uploadOss(img,filePath);
+        String url = uploadOss(img, filePath);
         return ResponseResult.okResult(url);
     }
 
@@ -72,7 +72,7 @@ public class OssUploadService implements UploadService {
                 DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
                 System.out.println(putRet.key);
                 System.out.println(putRet.hash);
-                return website+key;
+                return website + key;
             } catch (QiniuException ex) {
                 Response r = ex.response;
                 System.err.println(r.toString());
