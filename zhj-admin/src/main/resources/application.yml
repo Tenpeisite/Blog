@@ -28,7 +28,7 @@ mybatis-plus:
       id-type: auto
 
 oss:
-  accessKey: ka6H9o3ZTM112U-EWiiPChwk8rq3J31SNcIZ0pkb
-  secretKey: EZPiVi0ePmDKxy1Rw4VxhXD6PcO4nMigmzxL1Rko
-  bucket: blog-zhj
-  website: http://blog.tempeisite.xyz/
+  accessKey: 填你自己的
+  secretKey: 填你自己的
+  bucket: 填你自己的
+  website: 填你自己的
