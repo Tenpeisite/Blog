@@ -26,6 +26,7 @@ import com.zhj.utils.RedisCache;
 import org.assertj.core.util.Objects;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @date 2022/8/19 10:16
  */
-@Service
+@Service("articleService")
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
     @Autowired
     private CategoryService categoryService;
@@ -47,6 +48,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private ArticleTagService articleTagService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public Result hotArticleList() {
@@ -78,7 +82,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(categoryId != null && categoryId > 0, Article::getCategoryId, categoryId)
                 .eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL)
-                .orderByDesc(Article::getIsTop);
+                .orderByDesc(Article::getIsTop)
+                .orderByDesc(Article::getCreateTime);
         //2.分页查询
         Page<Article> pageInfo = new Page<>(pageNum, pageSize);
         page(pageInfo, queryWrapper);
@@ -140,6 +145,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         //添加博客和标签的关联关系
         articleTagService.saveBatch(articleTags);
+
+        //把图片url存入redis
+        redisTemplate.opsForSet().add(SystemConstants.Article_PIC_DB_RESOURCES,article.getThumbnail());
         return ResponseResult.okResult();
     }
 
@@ -197,6 +205,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .map(item -> new ArticleTag(article.getId(), item))
                 .collect(Collectors.toList());
         articleTagService.saveBatch(tags);
+
+        redisTemplate.opsForSet().add(SystemConstants.Article_PIC_DB_RESOURCES,editArticleDto.getThumbnail());
         return ResponseResult.okResult();
     }
 
@@ -208,6 +218,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ArticleTag::getArticleId, article.getId());
         articleTagService.remove(queryWrapper);
+        redisTemplate.opsForSet().remove(SystemConstants.Article_PIC_DB_RESOURCES,article.getThumbnail());
         return ResponseResult.okResult();
     }
 

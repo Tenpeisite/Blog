@@ -15,7 +15,7 @@ public enum AppHttpCodeEnum {
     NICKNAME_NOT_NULL(509,"昵称不能为空"),
     PASSWORD_NOT_NULL(510,"密码不能为空"),
     EMAIL_NOT_NULL(511,"邮箱不能为空"),
-    NICKNAME_EXIST(511,"昵称已存在" ),
+    NICKNAME_EXIST(512,"昵称已存在" ),
     // 成功
     SUCCESS(200,"操作成功");
     int code;

@@ -60,7 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //配置异常处理器
         http.exceptionHandling()
+                //认证失败
                 .authenticationEntryPoint(authenticationEntryPoint)
+                //授权失败
                 .accessDeniedHandler(accessDeniedHandler);
 
 

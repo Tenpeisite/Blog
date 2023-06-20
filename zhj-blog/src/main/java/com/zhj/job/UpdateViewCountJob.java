@@ -3,12 +3,14 @@ package com.zhj.job;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.zhj.constants.SystemConstants;
 import com.zhj.domin.entity.Article;
+import com.zhj.domin.entity.Menu;
 import com.zhj.service.ArticleService;
+import com.zhj.service.impl.OssUploadService;
 import com.zhj.utils.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +30,7 @@ public class UpdateViewCountJob {
 
     //每隔十分钟执行一次
     @Scheduled(cron = "* 0/10 * * * ? ")
-    public void updateViewCount(){
+    public void updateViewCount() {
         //获取redis中的浏览量
         Map<String, Integer> map = redisCache.getCacheMap(SystemConstants.REDIS_VIEWCOUNT_PREFIX);
         //更新到数据库中
@@ -36,8 +38,8 @@ public class UpdateViewCountJob {
         for (String id : set) {
             Integer viewCount = map.get(id);
             articleService.lambdaUpdate()
-                    .eq(StringUtils.isNotBlank(id), Article::getId,Long.valueOf(id))
-                    .set(Article::getViewCount,Long.valueOf(viewCount)).update();
+                    .eq(StringUtils.isNotBlank(id), Article::getId, Long.valueOf(id))
+                    .set(Article::getViewCount, Long.valueOf(viewCount)).update();
         }
     }
 }

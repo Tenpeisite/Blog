@@ -125,7 +125,7 @@ export default {
         qq: "/static/img/qq.png",
         sina: "https://weibo.com",
         wechat: "/static/img/qq.png",
-        csdn: "http://www.csdn.cn",
+        csdn: "https://blog.csdn.net/Decade_Faiz?spm=1000.2115.3001.5343",
         job: "https://www.baidu.com",
       },
     };

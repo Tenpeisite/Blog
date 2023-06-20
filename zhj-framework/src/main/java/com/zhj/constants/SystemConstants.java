@@ -42,6 +42,11 @@ public class SystemConstants
     public static final String YOULIAN_TYPE="1";
 
     /**
+     * 角色状态正常
+     */
+    public static final String ROLE_STATUS_NORMAL="0";
+
+    /**
      * redis用户id前缀
      */
     public static final String REDIS_LOGINUSER_PREFIX="bloglogin:";
@@ -51,10 +56,15 @@ public class SystemConstants
      */
     public static final int COMMENT_STATUS_NORMAL = -1;
 
+    //套餐图片所有图片名称
+    public static final String Article_PIC_RESOURCES = "articlePicResources";
+    //套餐图片保存在数据库中的图片名称
+    public static final String Article_PIC_DB_RESOURCES = "articlePicDbResources";
+
+    //菜单
     public static final String MENU="C";
+    //按钮
     public static final String BUTTON="F";
-
-
-
+    //管理员
     public static final String ADMIN = "1";
 }

@@ -3,6 +3,10 @@ package com.zhj.controller;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.zhj.domin.ResponseResult;
+import com.zhj.domin.dto.AddCategoryDto;
+import com.zhj.domin.dto.AddLinkDto;
+import com.zhj.domin.dto.EditCategoryDto;
+import com.zhj.domin.dto.EditCategoryStatusDto;
 import com.zhj.domin.entity.Category;
 import com.zhj.domin.entity.Tag;
 import com.zhj.domin.vo.CategoryVo;
@@ -15,9 +19,7 @@ import com.zhj.utils.BeanCopyUtils;
 import com.zhj.utils.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -54,7 +56,8 @@ public class CategoryController {
             List<ExcelCategoryVo> excelCategoryVos = BeanCopyUtils.copyBeanList(categories, ExcelCategoryVo.class);
             //把数据写入Excel
             // 这里需要设置不关闭流
-            EasyExcel.write(response.getOutputStream(), ExcelCategoryVo.class).autoCloseStream(Boolean.FALSE).sheet("分类导出")
+            EasyExcel.write(response.getOutputStream(), ExcelCategoryVo.class)
+                    .autoCloseStream(Boolean.FALSE).sheet("分类导出")
                     .doWrite(excelCategoryVos);
         }catch (Exception e){
             //如果出现异常也要响应json
@@ -62,5 +65,37 @@ public class CategoryController {
             WebUtils.renderString(response, JSON.toJSONString(result));
         }
     }
+
+    @GetMapping("/list")
+    public ResponseResult list(Integer pageNum,Integer pageSize,String name,String status){
+        return categoryService.getList(pageNum,pageSize,name,status);
+    }
+
+    @PostMapping
+    public ResponseResult addCategory(@RequestBody AddCategoryDto addCategoryDto){
+        return categoryService.addCategory(addCategoryDto);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseResult getCategory(@PathVariable Long id){
+        return categoryService.getCategory(id);
+    }
+
+    @PutMapping
+    public ResponseResult editCategory(@RequestBody EditCategoryDto editCategoryDto){
+        return categoryService.editCategory(editCategoryDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseResult deleteCategory(@PathVariable Long id){
+        categoryService.removeById(id);
+        return ResponseResult.okResult();
+    }
+
+    @PutMapping("/changeStatus")
+    public ResponseResult changeStatus(@RequestBody EditCategoryStatusDto editCategoryStatusDto){
+        return categoryService.changeStatus(editCategoryStatusDto);
+    }
+
 
 }

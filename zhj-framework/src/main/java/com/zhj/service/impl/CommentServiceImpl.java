@@ -81,7 +81,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         //遍历vo集合
         for (CommentVo commentVo : commentVos) {
             //通过creatyBy查询用户的昵称并赋值
-            String nickName = userService.getById(commentVo.getCreateBy()).getNickName();
+            Long creater = commentVo.getCreateBy();
+            if(creater.equals(-1L)){
+                creater=1L;
+            }
+            User user = userService.getById(creater);
+            //用户头像
+            String avatar = user.getAvatar();
+            commentVo.setAvatar(avatar);
+            //用户昵称
+            String nickName = user.getNickName();
             //通过toCommentUserId查询用户的昵称并赋值
             commentVo.setUsername(nickName);
             //如果toCommentUserId不为-1才进行查询

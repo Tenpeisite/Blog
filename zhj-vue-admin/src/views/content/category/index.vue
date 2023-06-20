@@ -124,7 +124,8 @@
 </template>
 
 <script>
-import { listCategory, getCategory, delCategory, addCategory, updateCategory, exportCategory } from '@/api/content/category'
+import { listCategory, getCategory, delCategory, addCategory, updateCategory, exportCategory,changeCategoryStatus } from '@/api/content/category'
+import {changeUserStatus} from "@/api/system/user";
 
 export default {
   name: 'Category',
@@ -234,6 +235,20 @@ export default {
         this.open = true
         this.title = '修改分类'
       })
+    },
+    handleStatusChange(row) {
+      const text = row.status === '0' ? '启用' : '停用'
+      this.$modal
+        .confirm('确认要"' + text + '""' + row.name + '"吗？')
+        .then(function() {
+          return changeCategoryStatus(row.id, row.status)
+        })
+        .then(() => {
+          this.$modal.msgSuccess(text + '成功')
+        })
+        .catch(function() {
+          row.status = row.status === '0' ? '1' : '0'
+        })
     },
     /** 提交按钮 */
     submitForm() {

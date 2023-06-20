@@ -36,6 +36,8 @@ public class CommentVo {
     private Date createTime;
     //评论人
     private String username;
+    //评论人头像
+    private String avatar;
     //子评论
     private List<CommentVo> children;
 }
